@@ -1,0 +1,4 @@
+interface:
+  display_name: "PDF to SketchUp"
+  short_description: "PDF 도면의 벽체 후보를 검증하고 공통 규칙으로 SketchUp 입력을 생성합니다"
+  default_prompt: "Use $pdf-to-sketchup to inspect this PDF and prepare wall geometry with the configured wall height."

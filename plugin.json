@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "interior-os",
+  "version": "0.3.0",
+  "description": "PDF 평면도와 높이로 편집 가능한 SketchUp 밑그림을 만드는 Skill과 공통 스크립트",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Interior OS",
+        "shortDescription": "추가 질문 없이 원본 참조와 벽체 밑그림을 .skp로 출력",
+        "longDescription": "PDF 채움 면·닫힌 선 윤곽·평행 선에서 벽체 후보를 선택해 SketchUp 밑그림을 만듭니다. 추정 벽체는 별도 그룹으로 분리하고 원본 평면도를 포함합니다. 벽체가 없는 경우에도 참조 평면도를 .skp로 출력하며 로컬 SketchUp C API로 저장과 재열기를 검증합니다.",
+        "category": "Productivity",
+        "defaultPrompt": [
+          "이 PDF의 벽체를 높이 2700mm로 처리해줘."
+        ]
+      }
+    }
+  }
+}

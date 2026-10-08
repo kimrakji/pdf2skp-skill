@@ -1,0 +1,20 @@
+{
+  "version": "poc-0.1",
+  "status": "provisional",
+  "default_wall_height_mm": 2700,
+  "low_wall_height_mm": 1200,
+  "height_range_mm": [
+    500,
+    10000
+  ],
+  "precision_mm": 0.1,
+  "min_footprint_area_mm2": 10,
+  "max_model_extent_mm": 200000,
+  "min_confidence": 0.9,
+  "max_scale_disagreement_ratio": 0.02,
+  "group_names": {
+    "default": "Walls_Default",
+    "low": "Walls_Low"
+  },
+  "draft_scale_denominator": 100
+}

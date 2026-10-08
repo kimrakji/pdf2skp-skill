@@ -1,0 +1,5 @@
+pdfplumber==0.11.9
+pypdf==6.10.0
+pypdfium2==5.13.0
+shapely==2.1.2
+jsonschema==4.25.1

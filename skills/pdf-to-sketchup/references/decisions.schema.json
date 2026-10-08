@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_sha256", "evidence_sha256", "page", "scope", "crop_bbox_pt", "calibration", "walls", "unresolved"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "evidence_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "page": {"type": "integer", "minimum": 1},
+    "scope": {"enum": ["partial", "full_page"]},
+    "crop_bbox_pt": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}, {"type": "number"}, {"type": "number"}], "items": false, "minItems": 4},
+    "calibration": {"type": "array", "items": {"$ref": "#/$defs/calibration"}, "minItems": 0, "maxItems": 2},
+    "scale_hint": {"type": "object", "additionalProperties": false, "required": ["mm_per_pt", "evidence"], "properties": {"mm_per_pt": {"type": "number", "exclusiveMinimum": 0}, "evidence": {"type": "string", "minLength": 1}}},
+    "walls": {"type": "array", "items": {"$ref": "#/$defs/wall"}, "minItems": 0, "maxItems": 5000},
+    "unresolved": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "point": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}], "items": false, "minItems": 2},
+    "calibration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["p1_pt", "p2_pt", "distance_mm", "evidence", "confidence"],
+      "properties": {
+        "p1_pt": {"$ref": "#/$defs/point"}, "p2_pt": {"$ref": "#/$defs/point"},
+        "distance_mm": {"type": "number", "exclusiveMinimum": 0, "maximum": 200000},
+        "evidence": {"type": "string", "minLength": 1},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "wall": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_id", "height_class", "evidence", "confidence"],
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "height_class": {"enum": ["default", "low"]},
+        "evidence": {"type": "string", "minLength": 1},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "schema_version": "1.0",
+  "units": "mm",
+  "scope": "partial",
+  "status": "ready_for_native_test",
+  "review_items": [],
+  "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "geometry_sha256": "15f1e27dc09008c6a532ed70dbd39ba888733ecebfebe7e02fd4a3e28a6e6021",
+  "walls": [
+    {
+      "id": "rectangle",
+      "outer_mm": [
+        [
+          0,
+          0
+        ],
+        [
+          600,
+          0
+        ],
+        [
+          600,
+          100
+        ],
+        [
+          0,
+          100
+        ]
+      ],
+      "holes_mm": [],
+      "height_mm": 2700,
+      "area_mm2": 60000,
+      "group": "Walls_Default",
+      "source_ids": [
+        "synthetic:rectangle"
+      ]
+    },
+    {
+      "id": "concave",
+      "outer_mm": [
+        [
+          1000,
+          0
+        ],
+        [
+          1600,
+          0
+        ],
+        [
+          1600,
+          100
+        ],
+        [
+          1100,
+          100
+        ],
+        [
+          1100,
+          700
+        ],
+        [
+          1000,
+          700
+        ]
+      ],
+      "holes_mm": [],
+      "height_mm": 2700,
+      "area_mm2": 120000,
+      "group": "Walls_Default",
+      "source_ids": [
+        "synthetic:concave"
+      ]
+    },
+    {
+      "id": "hole",
+      "outer_mm": [
+        [
+          2000,
+          0
+        ],
+        [
+          2800,
+          0
+        ],
+        [
+          2800,
+          800
+        ],
+        [
+          2000,
+          800
+        ]
+      ],
+      "holes_mm": [
+        [
+          [
+            2200,
+            200
+          ],
+          [
+            2200,
+            600
+          ],
+          [
+            2600,
+            600
+          ],
+          [
+            2600,
+            200
+          ]
+        ]
+      ],
+      "height_mm": 2700,
+      "area_mm2": 480000,
+      "group": "벽체_구멍",
+      "source_ids": [
+        "synthetic:hole"
+      ]
+    },
+    {
+      "id": "low",
+      "outer_mm": [
+        [
+          3000,
+          0
+        ],
+        [
+          3400,
+          0
+        ],
+        [
+          3400,
+          100
+        ],
+        [
+          3000,
+          100
+        ]
+      ],
+      "holes_mm": [],
+      "height_mm": 1200,
+      "area_mm2": 40000,
+      "group": "Walls_Low",
+      "source_ids": [
+        "synthetic:low"
+      ]
+    }
+  ]
+}
