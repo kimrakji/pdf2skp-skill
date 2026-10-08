@@ -1,68 +1,96 @@
-# ChatGPT 데스크톱 앱 설정
+# Skill Installation: 스킬 설치와 업데이트
 
-macOS에서 로컬 Plugin으로 `PDF to SketchUp` Skill과 고정 스크립트를 설치하는 방법이다. 앱에 Work와 Plugins 메뉴가 보이는 환경에서 진행한다. Pro 구독만으로 해당 메뉴와 실행 환경이 제공된다고 확정하지 않는다.
+GitHub의 `kimrakji/pdf2skp-skill`에서 Agent Skill을 설치합니다. Codex의 내장 설치기 또는 스킬 폴더 복사를 사용하며 별도의 Node.js·npm·npx 설치는 필요하지 않습니다. 변환은 사용자의 컴퓨터에서 실행합니다.
 
-## 1. 개인 목록에 등록
+## Codex: 내장 설치기로 설치
 
-이 Mac의 터미널에서 실행한다. 현재 저장소에는 Python 가상환경과 의존성이 준비되어 있다.
-
-```sh
-cd /Users/minjae/Workspace/interior-os
-.venv/bin/python scripts/install-chatgpt-plugin.py
-```
-
-명령은 다음 두 경로를 사용한다.
-
-- `~/.codex/plugins/interior-os`: `plugin.json`과 `skills/` 복사본
-- `~/.agents/plugins/marketplace.json`: 앱에 표시할 개인 플러그인 목록
-
-기존 목록의 다른 항목과 마켓플레이스 이름을 보존한다. 목록을 변경하면 같은 폴더에 원본 백업을 남긴다. 설치 명령이 출력한 마켓플레이스 이름을 다음 단계에서 사용한다. 새 목록이면 `Interior OS Local`이다. 회사 PDF와 변환 결과는 복사하지 않는다.
-
-다른 PC에서는 저장소를 복사한 위치에서 먼저 실행 환경을 준비한다.
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r skills/pdf-to-sketchup/requirements.txt
-.venv/bin/python scripts/install-chatgpt-plugin.py
-```
-
-## 2. 앱에서 설치
-
-1. ChatGPT 데스크톱 앱을 완전히 종료하고 다시 연다.
-2. **Plugins**를 열고, 위 명령이 출력한 로컬 마켓플레이스 이름을 선택한다.
-3. **Interior OS** 상세 화면의 **+** 버튼으로 설치한다.
-4. 새 **Work** 대화를 연다. 입력창에 `@`를 입력하고 **Interior OS** 또는 포함된 **PDF to SketchUp** Skill을 선택한다.
-
-이는 [공식 OpenAI 로컬 Plugin 설치 방식](https://developers.openai.com/plugins/build/plugins)과 [앱에서 설치·호출하는 방식](https://learn.chatgpt.com/docs/plugins)을 따른다. 이 패키지에는 MCP 서버 설정이 없다.
-
-## 3. 실행 환경부터 확인
-
-Skill을 선택한 새 대화에서 아래 내용을 보낸다.
+Codex의 새 대화에서 다음 요청을 보냅니다.
 
 ```text
-PDF 변환을 위한 실행 환경을 확인해줘.
-작업 폴더: /Users/minjae/Workspace/interior-os
-Python: /Users/minjae/Workspace/interior-os/.venv/bin/python
-이 Python으로 pdfplumber, pypdf, pypdfium2, shapely, jsonschema를 import하고,
-설치된 Skill의 scripts/main.py --help를 실행해줘.
-성공한 명령과 실제 실행 위치를 알려줘.
+$skill-installer
+https://github.com/kimrakji/pdf2skp-skill/tree/main/skills/pdf-to-sketchup
+이 스킬을 사용자 스킬로 설치해줘.
 ```
 
-앱이 해당 Mac의 파일과 명령을 실행할 수 있어야 다음 단계로 진행할 수 있다. 클라우드 실행 위치에서는 위 Mac 경로가 보이지 않을 수 있다. Skill 설치만으로 로컬 Python 접근이나 SketchUp 실행 권한이 생기지는 않는다. 실행 환경을 확인하지 못하면 앱 버전, Work/Plugins 메뉴 유무, 실패한 명령을 확인한다.
+[Codex의 스킬 설치 기능](https://learn.chatgpt.com/docs/build-skills)이 스킬 폴더를 받아 등록합니다. 비공개 저장소는 접근 권한과 GitHub 인증이 준비되어 있어야 합니다. 설치 후 새 대화에서 **PDF to SketchUp** 스킬을 선택합니다. 표시되지 않으면 앱을 다시 시작합니다.
 
-## 4. PDF 변환 시험
+GitHub에 게시된 내용이 설치되므로, 로컬 수정 사항은 저장소에 올린 후 배포합니다. 기존 **Interior OS** 플러그인과 단독 스킬이 함께 설치되어 있다면 사용할 항목을 명시해 중복 호출을 피합니다.
 
-실행 환경 확인 후 PDF를 첨부하거나 접근 가능한 로컬 PDF 경로를 지정하고, Skill을 선택해 다음처럼 요청한다.
+## Manual: 폴더를 복사해 설치
+
+내장 설치기가 없는 에이전트에서는 GitHub 저장소의 **Code → Download ZIP**으로 소스를 받습니다. 압축을 풀고 `skills/pdf-to-sketchup/` 폴더 전체를 에이전트의 사용자 스킬 위치에 복사합니다.
+
+| 에이전트 | 사용자 스킬 폴더 |
+| --- | --- |
+| Codex | `~/.agents/skills/pdf-to-sketchup/` |
+| Claude Code | `~/.claude/skills/pdf-to-sketchup/` |
+
+설치된 폴더 바로 아래에 `SKILL.md`, `scripts/`, `references/`, `requirements.txt`가 있어야 합니다. `SKILL.md`만 복사하면 변환 코드와 참고 자료가 빠집니다. 다른 에이전트는 해당 제품의 스킬 설치 위치를 따릅니다.
+
+폴더 위치는 [Codex 문서](https://learn.chatgpt.com/docs/build-skills)와 [Claude의 스킬 문서](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)를 참고하세요.
+
+## Runtime: 실행 환경 준비
+
+스킬을 선택하고 다음처럼 요청합니다.
 
 ```text
-이 PDF의 벽체를 높이 2700mm로 처리해줘.
-공통 규칙으로 추출하고, 벽체 선택 미리보기와 검증 결과를 보여줘.
+PDF to SketchUp 스킬의 Python 실행 환경을 준비하고,
+이 컴퓨터의 SketchUp C API 라이브러리를 사용할 수 있는지 확인해줘.
 ```
 
-AI가 Skill의 순서에 따라 후보를 선택하고 결정 JSON을 작성한다. 고정 Python 스크립트는 축척·병합·높이를 처리하고 `model.json`, `validation.json`, `selection.png`를 만든다. 실제 `.skp`는 [독립 C API exporter](c-sdk-poc.md)로 저장할 수 있다. 해당 로컬 실행 환경에서 native 라이브러리 로드와 저장이 가능해야 한다. 앱에서 `.skp`를 바로 내려받는 과정은 아직 검증하지 않았다.
+스킬은 사용자가 지정한 Python을 우선 사용하고, 지정이 없으면 `~/.local/share/pdf2skp-skill/.venv`에 실행 환경을 준비합니다. 가상환경은 스킬 설치 폴더 밖에 두어 스킬을 업데이트해도 유지합니다. Python을 실행할 수 있는 환경과 로컬 SketchUp C API 라이브러리는 필요합니다.
 
-## 업데이트와 현재 검증 범위
+위 수동 설치 위치에 Codex 스킬을 복사한 경우, Python 환경을 직접 준비하려면 다음 명령을 실행합니다.
 
-Skill을 수정하면 등록 명령을 다시 실행하고 앱을 재시작한다. 앱은 설치한 캐시 복사본을 사용하므로 새 대화에서 변경 사항을 확인한다. 필요하면 Plugins 상세 화면에서 업데이트하거나 다시 설치한다.
+```sh
+python3 -m venv "$HOME/.local/share/pdf2skp-skill/.venv"
+"$HOME/.local/share/pdf2skp-skill/.venv/bin/python" -m pip install -r "$HOME/.agents/skills/pdf-to-sketchup/requirements.txt"
+"$HOME/.local/share/pdf2skp-skill/.venv/bin/python" -c "import pdfplumber, pypdf, pypdfium2, shapely, jsonschema"
+```
 
-등록 스크립트는 임시 폴더에서 신규 등록, 기존 목록 보존, 재실행을 확인한다. 실제 사용자 홈에 등록하거나 ChatGPT 앱에서 설치·실행하는 과정은 별도 시험 대상이다. 기존 `pdf-to-sketchup-poc.zip`은 Skill 소스만 담은 전달 파일이며, 이 설치 명령은 저장소의 `plugin.json`과 `skills/`를 사용한다.
+다른 설치 위치에서는 `requirements.txt` 경로를 실제 스킬 위치로 바꿉니다. 스킬 설치만으로 Python 의존성과 SketchUp SDK가 설치되지는 않습니다.
+
+실제 `.skp` 저장에는 로컬 C API 바이너리 경로가 필요합니다. macOS에서 검증한 경로는 다음과 같습니다.
+
+```text
+/Applications/SketchUp 2026/SketchUp.app/Contents/Frameworks/SketchUpAPI.framework/SketchUpAPI
+```
+
+설치된 SketchUp 버전에 따라 경로가 달라집니다. SDK 바이너리는 이 저장소에서 배포하지 않습니다. 바이너리 로드와 파일 저장이 가능한지는 [C API 가이드](c-sdk-poc.md)의 명령으로 확인합니다.
+
+## Usage: 변환 요청
+
+스킬을 선택하고 PDF를 첨부하거나 접근 가능한 로컬 경로를 지정합니다.
+
+```text
+이 PDF의 벽체를 높이 2800mm로 처리해줘.
+편집 가능한 SketchUp 밑그림과 벽체 선택 미리보기를 만들어줘.
+```
+
+최종 전달 폴더에는 `.skp`와 `selection.png`만 넣습니다. 모델 입력, JSON 검증 보고서, 원본 참조 이미지는 내부 작업 폴더에 보관합니다. 파일·명령 실행 권한과 실제 native 저장이 가능한지는 해당 에이전트의 실행 환경에서 확인합니다.
+
+## Update: 업데이트
+
+Codex에서는 설치된 스킬의 위치와 GitHub 링크를 함께 전달해 업데이트를 요청합니다.
+
+```text
+설치된 PDF to SketchUp 스킬을 아래 GitHub의 최신 내용으로 업데이트해줘.
+https://github.com/kimrakji/pdf2skp-skill/tree/main/skills/pdf-to-sketchup
+기존 스킬 위치에 반영하고 Python 실행 환경은 유지해줘.
+```
+
+내장 설치기는 기존 폴더가 있으면 자동으로 덮어쓰지 않습니다. 업데이트 작업은 에이전트가 기존 설치 위치를 확인하고 새 소스를 받아 반영하도록 요청합니다. 수동 설치에서는 최신 ZIP에서 같은 스킬 폴더를 받아 기존 위치에 반영합니다.
+
+업데이트 후 새 대화에서 사용합니다. Python 의존성이 바뀌었다면 실행 환경 준비를 다시 요청하거나 설치된 스킬의 `requirements.txt`로 `pip install -r`을 다시 실행합니다.
+
+## Local Plugin: 기존 로컬 플러그인 방식
+
+앱의 Plugins 목록에서 **Interior OS** 플러그인을 사용하는 경우에는 기존 등록 스크립트를 유지합니다. 소스를 받은 폴더에서 실행합니다.
+
+```sh
+python3 scripts/install-chatgpt-plugin.py
+```
+
+이 명령은 `plugin.json`과 `skills/`를 `~/.codex/plugins/interior-os`에 복사하고 `~/.agents/plugins/marketplace.json`에 등록합니다. 앱을 재시작한 뒤 해당 로컬 목록에서 플러그인을 설치·업데이트하고 새 대화에서 사용합니다. Python 실행 환경은 위와 같이 별도로 준비합니다.
+
+이 방식은 [OpenAI 로컬 플러그인 설치](https://developers.openai.com/plugins/build/plugins)를 따릅니다. 단독 스킬 설치에는 이 등록 스크립트가 필요하지 않습니다.

@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "interior-os",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "PDF 평면도와 높이로 편집 가능한 SketchUp 밑그림을 만드는 Skill과 공통 스크립트",
   "extensions": {
     "com.openai": {

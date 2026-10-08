@@ -47,3 +47,5 @@ AI의 변동이 남는 곳은 평면도 영역·축척 기준점·벽체와 가�
 PDF adapter의 공통 `outlined_paths.py`는 닫힌 직선 stroke 및 실제 평행 선 겹침을 후보로 제공한다. 문틈을 연결하지 않는다. AI는 후보를 선택하고 feature는 추정 벽체를 별도 태그로 분리한다. 도면별 좌표 예외·새 모델링 코드는 추가하지 않는다.
 
 app은 crop한 원본 이미지를 `source-plan.png`로 저장하고 모델 JSON에 상대 경로·hash·실제 크기를 넣는다. native adapter는 이를 `Source_Plan` 그룹의 이미지로 포함한다. 벽체 후보가 0개인 스캔도 참조를 포함한 `.skp`로 출력된다. 이미지 위치·크기·데이터 hash는 저장 전과 재열기 후에 검사한다. 이 이미지까지 geometry hash에 포함하며, 기존 strict 모델의 벽체 hash 형식은 보존한다.
+
+최종 전달 파일은 `.skp`와 `selection.png`다. Skill은 작업별 `work/` 폴더에서 기존 추출·모델 생성·native 저장·검증을 수행하고, 성공한 두 파일만 새 `final/` 폴더로 복사한다. 모델 JSON, 참조 PNG, 검증 보고서는 내부에 유지한다. exporter의 입출력 계약과 검증 코드는 그대로 사용한다.
