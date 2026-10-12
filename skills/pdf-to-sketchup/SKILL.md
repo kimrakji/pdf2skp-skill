@@ -21,9 +21,9 @@ description: "PDF 평면도와 벽체 높이로 편집 가능한 SketchUp 밑그
 
 첫 변환 또는 실행 환경 준비 요청에서 설치된 스킬의 `scripts/setup.sh`를 macOS에서 `sh`로 실행한다. Windows에서는 `scripts/setup.ps1`을 PowerShell로 실행한다. Python이 없어도 시작할 수 있으며, 필요한 경우 공식 uv 설치기를 받아 사용자 폴더에 uv와 Python 3.12를 준비하고 의존성을 설치한다. 관리자 설치나 시스템 PATH 변경은 하지 않는다. 사용자가 Python을 지정하면 `PDF2SKP_PYTHON`에 전달한다. 기존 환경과 스킬 폴더 안에 가상환경을 만들거나 다른 프로젝트의 개발 환경에 의존하지 않는다.
 
-기본 실행 환경은 macOS의 `~/.local/share/pdf2skp-skill/`, Windows의 `%LOCALAPPDATA%/pdf2skp-skill/`이다. 준비 스크립트는 설치된 SketchUp의 C API를 찾아 시험 벽체와 참조 이미지를 실제 `.skp`로 저장하고 별도 프로세스에서 다시 연다. 결과와 Python·라이브러리 경로는 실행 환경의 `runtime.json`에 기록한다. 사용자가 로컬 C API를 지정하면 준비 스크립트에 `--library`로 전달한다. 상세 설치 절차와 개발자 옵션은 [runtime-setup.md](references/runtime-setup.md)를 따른다.
+기본 실행 환경은 macOS의 `~/.local/share/pdf2skp-skill/`, Windows의 `%LOCALAPPDATA%/pdf2skp-skill/`이다. 준비 스크립트는 설치된 SketchUp의 C API를 먼저 검사한다. Windows에서 없거나 사용할 수 없으면 준비된 SDK를 재사용하거나 공식 Windows x64 SDK ZIP을 다운로드·압축 해제한다. SDK 경로와 동반 DLL은 에이전트가 처리한다. 시험 벽체와 참조 이미지를 실제 `.skp`로 저장하고 별도 프로세스에서 다시 연다. 결과와 Python·라이브러리 경로는 실행 환경의 `runtime.json`에 기록한다. 사용자가 로컬 C API를 지정하면 준비 스크립트에 `--library`로 전달하며 다른 라이브러리로 바꾸지 않는다. 상세 설치 절차와 개발자 옵션은 [runtime-setup.md](references/runtime-setup.md)를 따른다.
 
-준비가 성공한 경우 `runtime.json`의 `python`과 `sketchup_library`로 변환을 실행한다. 이후에는 준비된 환경을 재사용하며 의존성 변경 또는 실행 오류가 있으면 준비 스크립트를 다시 실행한다. 스크립트가 실패하거나 `ready`가 false이면 준비 완료라고 보고하지 않는다. 설치된 SketchUp에서 C API를 찾지 못하거나 저장 검증이 실패하면 원인과 필요한 조치만 안내하고 아래 실패 시 전달 규칙을 따른다. SketchUp 구매·로그인·관리자 승인이나 회사 보안 정책 때문에 에이전트가 진행할 수 없는 단계를 자동 처리했다고 말하지 않는다.
+준비가 성공한 경우 `runtime.json`의 `python`과 `sketchup_library`로 변환을 실행한다. 이후에는 준비된 환경을 재사용하며 의존성 변경 또는 실행 오류가 있으면 준비 스크립트를 다시 실행한다. Windows의 `sdk_status: unavailable`은 공식 다운로드 페이지를 확인하고 공개된 ZIP이 있을 때 에이전트가 `--sdk-url`로 전달해 재시도한다. 공개 다운로드가 중단되거나 접근 승인이 필요하면 그 사실을 보고한다. 디자이너에게 SDK 수동 설치·경로 설정을 맡기거나 비공식 미러를 사용하지 않는다. 스크립트가 실패하거나 `ready`가 false이면 준비 완료라고 보고하지 않고 아래 실패 시 전달 규칙을 따른다. SketchUp 구매·로그인·관리자 승인이나 회사 보안 정책 때문에 에이전트가 진행할 수 없는 단계를 자동 처리했다고 말하지 않는다.
 
 ## 실행
 

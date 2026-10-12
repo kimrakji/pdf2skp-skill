@@ -6,6 +6,8 @@ contain one void pointer. Keep API calls on the process's main thread.
 """
 
 import ctypes as c
+import os
+import sys
 import threading
 from contextlib import contextmanager
 from pathlib import Path
@@ -94,7 +96,17 @@ CONVERSIONS = ("SUGroupToEntity", "SUGroupToDrawingElement", "SUGroupToComponent
 class CAPI:
     def __init__(self, library):
         self.path = Path(library).resolve(strict=True)
-        self.lib = c.CDLL(str(self.path))
+        self.dll_directory = None
+        if sys.platform == 'win32':
+            self.dll_directory = os.add_dll_directory(str(self.path.parent))
+        try:
+            self.lib = c.CDLL(str(self.path))
+            self.bind()
+        except Exception:
+            self.close_directory()
+            raise
+
+    def bind(self):
         for name, args in SIGNATURES.items():
             function = getattr(self.lib, name)
             function.argtypes = args
@@ -108,12 +120,27 @@ class CAPI:
 
     def __enter__(self):
         if threading.current_thread() is not threading.main_thread():
+            self.close_directory()
             raise NativeError("SketchUp C API must run on the main thread")
-        self.lib.SUInitialize()
+        if sys.platform == 'win32' and self.dll_directory is None:
+            self.dll_directory = os.add_dll_directory(str(self.path.parent))
+        try:
+            self.lib.SUInitialize()
+        except Exception:
+            self.close_directory()
+            raise
         return self
 
     def __exit__(self, *_):
-        self.lib.SUTerminate()
+        try:
+            self.lib.SUTerminate()
+        finally:
+            self.close_directory()
+
+    def close_directory(self):
+        if self.dll_directory is not None:
+            self.dll_directory.close()
+            self.dll_directory = None
 
     def call(self, name, *args):
         result = getattr(self.lib, name)(*args)

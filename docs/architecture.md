@@ -29,7 +29,7 @@ AI의 변동이 남는 곳은 평면도 영역·축척 기준점·벽체와 가�
 | `scripts/features/walls/service.py` | 벽체 축척·높이·병합 정책 |
 | `scripts/externals/pdf/` | PDF 파싱, 렌더, 선택 이미지 |
 | `scripts/features/walls/solid.py` | 모델 입력 검증과 mm 단위 닫힌 입체 구성 |
-| `scripts/externals/sketchup/` | C API ABI 연결·native 입출력·재열기 검사와 기존 Ruby exporter |
+| `scripts/externals/sketchup/` | 공식 Windows SDK 다운로드·압축 해제·재사용, C API ABI 연결·native 입출력·재열기 검사와 기존 Ruby exporter |
 | `scripts/core/files.py` | JSON 입출력, hash |
 | `references/` | 회사 정책 가정, 판단 계약, 평가 절차 |
 | `tests/` | PDF 추출부터 모델 입력까지 통합 검증 |
@@ -38,7 +38,7 @@ AI의 변동이 남는 곳은 평면도 영역·축척 기준점·벽체와 가�
 
 로컬 Python 프로세스에서 ctypes로 C API를 호출한다. 사용 가능한 native 바이너리 경로는 실행 인자로 주입한다. feature는 mm 좌표와 면의 vertex index를 생성하며 C API와 inch 변환을 알지 않는다. 외부 adapter는 inch 변환, native 그룹·태그·속성 작성, 파일 저장과 재열기 검사를 담당한다. SDK 호출은 메인 스레드에서 수행한다. 새 `.skp`와 보고서는 임시 경로에서 검증한 뒤 기존 파일을 덮어쓰지 않는 방식으로 게시한다.
 
-이번 PoC는 macOS / C API 14.2에서 설치된 SketchUp 앱의 C API framework를 별도 프로세스에 로드했다. SketchUp Ruby API나 활성 모델을 사용하지 않는다. 독립 SDK 패키지 확보, SDK 바이너리 재배포, 다른 OS 빌드는 별도 검증 대상이다. [결과와 실행 절차](c-sdk-poc.md)를 참고한다. 실제 ChatGPT 계정에서의 실행·파일 전달은 로컬 CLI 성공과 별도로 확인한다.
+이번 PoC는 macOS / C API 14.2에서 설치된 SketchUp 앱의 C API framework를 별도 프로세스에 로드했다. SketchUp Ruby API나 활성 모델을 사용하지 않는다. Windows는 설치된 C API가 없거나 검사에 실패하면 `externals/sketchup/sdk.py`가 공식 SDK를 사용자 실행 폴더에 준비한다. 동반 DLL을 같은 폴더에 보관하고 C API 수명 동안 해당 폴더를 DLL 검색 경로에 유지한다. 다운로드·압축·바이너리 형식 검사와 native 저장·재열기 성공을 구분하며 최종 준비 상태는 후자로 결정한다. 공식 SDK 공개 배포가 중단되면 `ready: false`, `sdk_status: unavailable`로 기록한다. SDK 자동 준비는 시험 패키지로 검증했으며 실제 Windows 실행과 SDK 바이너리 재배포는 검증하지 않았다. [결과와 실행 절차](c-sdk-poc.md)를 참고한다. 실제 ChatGPT 계정에서의 실행·파일 전달은 로컬 CLI 성공과 별도로 확인한다.
 
 
 ## 밑그림 모드 0.3.0

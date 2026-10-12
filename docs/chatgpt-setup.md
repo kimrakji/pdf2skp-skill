@@ -41,11 +41,11 @@ PDF to SketchUp을 이 컴퓨터에서 사용할 수 있게 준비해줘.
 
 에이전트는 macOS의 `scripts/setup.sh` 또는 Windows의 `scripts/setup.ps1`을 실행합니다. 필요한 경우 uv와 Python 3.12를 사용자 폴더에 내려받고 가상환경과 Python 패키지를 준비합니다. 인터넷 연결과 사용자 폴더 쓰기 권한이 필요하며, 관리자 설치나 시스템 PATH 변경은 하지 않습니다.
 
-준비된 환경은 macOS의 `~/.local/share/pdf2skp-skill/`, Windows의 `%LOCALAPPDATA%/pdf2skp-skill/`에 보관합니다. 스킬 설치 폴더 밖에 두므로 스킬을 업데이트해도 유지합니다. 이어서 설치된 SketchUp의 C API를 찾고 시험 모델의 실제 `.skp` 저장·재열기를 검사합니다. 에이전트는 성공한 `runtime.json`의 경로로 변환을 실행하므로 디자이너가 라이브러리 경로를 찾아 입력할 필요가 없습니다.
+준비된 환경은 macOS의 `~/.local/share/pdf2skp-skill/`, Windows의 `%LOCALAPPDATA%/pdf2skp-skill/`에 보관합니다. 스킬 설치 폴더 밖에 두므로 스킬을 업데이트해도 유지합니다. 이어서 설치된 SketchUp의 C API를 찾고 시험 모델의 실제 `.skp` 저장·재열기를 검사합니다. Windows에서 없거나 사용할 수 없으면 공식 SDK ZIP을 다운로드·압축 해제하고 같은 검사를 수행합니다. 준비된 SDK는 재사용하며 손상되면 다시 받습니다. 에이전트는 성공한 `runtime.json`의 경로로 변환을 실행하므로 디자이너가 SDK 설치나 라이브러리 경로 설정을 할 필요가 없습니다.
 
 macOS arm64에서는 개발용 Python과 uv가 없는 실행 경로, 새 사용자 실행 폴더에서 자동 다운로드·설치·저장 검증을 확인했습니다. Windows 스크립트는 구현되어 있지만 Windows 컴퓨터에서의 실제 실행은 아직 검증하지 않았습니다. 실행 상세와 개발자 옵션은 [자동 준비 지침](../skills/pdf-to-sketchup/references/runtime-setup.md)을 참고하세요.
 
-SketchUp 자체의 구매·설치·로그인과 회사 보안 정책 때문에 차단된 단계는 별도 조치가 필요할 수 있습니다. 설치된 SketchUp에 C API가 없거나 로드되지 않으면 준비 완료라고 안내하지 않습니다. SDK 바이너리는 이 저장소에서 배포하지 않으며, native 동작과 검증 범위는 [C API 가이드](c-sdk-poc.md)에 정리되어 있습니다.
+**2026-10-12 현재 [공식 SDK 페이지](https://extensions.sketchup.com/sketchup-sdk)는 공개 다운로드를 중단하고 접근 신청만 받습니다.** 설치된 C API나 준비된 SDK가 없는 경우에는 현재 자동 준비를 완료할 수 없습니다. 에이전트는 공식 배포 중단·접근 승인·회사 보안 정책 등 차단된 원인을 보고하며 준비 완료라고 안내하지 않습니다. SDK 바이너리는 이 저장소에서 배포하지 않으며, native 동작과 검증 범위는 [C API 가이드](c-sdk-poc.md)에 정리되어 있습니다.
 
 ## Usage: 변환 요청
 

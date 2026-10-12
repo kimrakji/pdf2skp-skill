@@ -8,9 +8,11 @@ import os
 import subprocess
 import sys
 import tempfile
+import zipfile
 from pathlib import Path
 
 from core.files import digest
+from externals.sketchup.sdk import SDKUnavailable, cached_sdk_library, prepare_windows_sdk
 
 
 def library_candidates(explicit=None):
@@ -62,6 +64,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime-root', type=Path, required=True)
     parser.add_argument('--library', type=Path, default=os.environ.get('PDF2SKP_SKETCHUP_API'))
+    parser.add_argument('--sdk-url', help='Published official Windows SDK ZIP URL (agent/developer option)')
+    parser.add_argument('--sdk-sha256', help='Expected SDK ZIP SHA-256 (agent/developer option)')
     args = parser.parse_args()
     args.runtime_root.mkdir(parents=True, exist_ok=True)
     report = {'ready': False, 'python': sys.executable, 'platform': sys.platform,
@@ -71,15 +75,38 @@ def main():
             importlib.import_module(module)
         report['dependencies_ready'] = True
         candidates = library_candidates(args.library)
-        if not candidates:
-            raise RuntimeError('SketchUp C API was not found in the installed SketchUp. Python is ready; native saving is unavailable.')
         for library in candidates:
             try:
                 check_native(library, args.runtime_root)
-                report.update(ready=True, sketchup_library=str(library.resolve()), native_roundtrip_verified=True)
+                report.update(ready=True, sketchup_library=str(library.resolve()), native_roundtrip_verified=True,
+                              sketchup_source='explicit' if args.library else 'installed')
                 break
             except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as error:
                 report['errors'].append(f'{library}: {error}')
+        if not report['ready'] and sys.platform == 'win32' and not args.library:
+            report['sdk_status'] = 'preparing'
+            try:
+                library = cached_sdk_library(args.runtime_root, args.sdk_url, args.sdk_sha256)
+                from_cache = library is not None
+                library = library or prepare_windows_sdk(args.runtime_root, args.sdk_url, args.sdk_sha256)
+                try:
+                    check_native(library, args.runtime_root)
+                except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired):
+                    # Repair a cached but unusable SDK once; never retry indefinitely.
+                    if not from_cache:
+                        raise
+                    library = prepare_windows_sdk(args.runtime_root, args.sdk_url, args.sdk_sha256, refresh=True)
+                    check_native(library, args.runtime_root)
+                report.update(ready=True, sketchup_library=str(library.resolve()), native_roundtrip_verified=True,
+                              sketchup_source='sdk', sdk_status='verified')
+            except SDKUnavailable as error:
+                report['sdk_status'] = 'unavailable'
+                report['errors'].append(str(error))
+            except (OSError, RuntimeError, ValueError, zipfile.BadZipFile, subprocess.TimeoutExpired) as error:
+                report['sdk_status'] = 'failed'
+                report['errors'].append(f'Windows SDK setup failed: {error}')
+        elif not candidates:
+            raise RuntimeError('SketchUp C API was not found in the installed SketchUp. Python is ready; native saving is unavailable.')
     except (ImportError, OSError, RuntimeError) as error:
         report['errors'].append(str(error))
     target = args.runtime_root / 'runtime.json'

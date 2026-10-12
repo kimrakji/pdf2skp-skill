@@ -25,14 +25,23 @@ Windows PowerShell:
 1. 준비된 uv가 없으면 [공식 설치기](https://docs.astral.sh/uv/reference/installer/)로 사용자 폴더에 설치한다. 셸 프로필·시스템 PATH를 바꾸지 않는다. Homebrew·Node.js·컴파일러는 사용하지 않는다.
 2. 실행 환경이 없으면 uv로 Python 3.12 가상환경을 만든다. [uv는 Python이 없어도 필요한 인터프리터를 다운로드한다](https://docs.astral.sh/uv/guides/install-python/).
 3. 설치된 스킬의 `requirements.txt`를 적용하고 PDF 처리·형상 생성 모듈의 import를 확인한다.
-4. 설치된 SketchUp의 C API 바이너리를 찾는다. 사용자가 지정한 라이브러리는 우선 사용하며 자동 검색으로 다른 경로로 바꾸지 않는다.
-5. 임시 폴더에서 벽체와 원본 참조 이미지가 포함된 `.skp`를 저장하고, 별도 프로세스에서 높이·입체·참조 이미지를 검사한다. 시험 파일은 지운다.
-6. `runtime.json`에 실제 Python·C API 경로와 `ready` 상태를 기록한다. 종료 코드 0과 `ready: true`가 모두 확인되어야 사용 가능으로 안내한다.
+4. 설치된 SketchUp의 C API 바이너리를 찾고 저장·재열기 검사를 수행한다. 사용자가 지정한 라이브러리는 우선 사용하며 자동 검색이나 SDK 다운로드로 다른 경로로 바꾸지 않는다.
+5. Windows에서 설치된 C API가 없거나 검사에 실패하면 사용자 실행 폴더의 SDK를 재사용한다. 없거나 손상되었으면 [공식 SDK 페이지](https://extensions.sketchup.com/sketchup-sdk)에 공개된 Windows x64 ZIP을 다운로드하고 `sdk/windows-x64/`에 압축 해제한다. 공식 HTTPS 주소만 사용하고 리디렉션도 확인한다. SDK와 동반 DLL·라이선스 파일을 함께 보관한다. 압축 경로·용량, 두 C API DLL의 x64 형식, 다운로드 hash를 검사하고, 실패한 다운로드로 기존 SDK를 덮어쓰지 않는다.
+6. 임시 폴더에서 벽체와 원본 참조 이미지가 포함된 `.skp`를 저장하고, 별도 프로세스에서 높이·입체·참조 이미지를 검사한다. 시험 파일은 지운다. 기존 SDK의 native 검사가 실패하면 공식 SDK를 한 번 다시 준비하여 검사한다. 새 SDK 검사도 실패하면 중단한다.
+7. `runtime.json`에 실제 Python·C API 경로와 `ready` 상태를 기록한다. 종료 코드 0과 `ready: true`가 모두 확인되어야 사용 가능으로 안내한다. Windows SDK 결과는 `sdk_status`의 `verified`, `unavailable`, `failed`로 구분한다.
 
-SketchUp과 SDK 바이너리는 스킬에 포함하지 않는다. 기존 SketchUp에 C API가 없거나 로드되지 않는 경우, Python 준비 성공과 `.skp` 저장 가능 여부를 구분해 보고한다. 이 스크립트가 SketchUp 구매·로그인·SDK 확보까지 완료한다고 안내하지 않는다.
+### 공식 SDK 다운로드가 막힌 경우
+
+2026-10-12 확인 시 공식 페이지는 SDK가 공개 다운로드에 제공되지 않는다고 안내하며 **Request Access**만 제공한다. 따라서 현재 설치된 C API나 준비된 SDK가 없는 컴퓨터는 SDK 자동 다운로드를 완료할 수 없다. 공개 다운로드 링크를 추측하거나 비공식 미러로 대체하지 않는다.
+
+페이지가 JavaScript로 링크를 표시하거나 자동 요청이 차단되어 `sdk_status: unavailable`이 기록되면 에이전트가 공식 페이지를 브라우저로 확인한다. 공개된 Windows x64 SDK ZIP이 있으면 그 주소를 `setup.ps1 --sdk-url OFFICIAL_ZIP_URL`에 전달하여 같은 준비 흐름을 다시 실행한다. 제공된 SHA-256도 있으면 `--sdk-sha256`으로 전달한다. 링크 확인과 옵션 전달은 에이전트가 수행하며 디자이너에게 맡기지 않는다. 접근 신청·로그인·공급사 승인 없이는 받을 수 없다면 차단 이유를 전달한다.
+
+SketchUp과 SDK 바이너리는 스킬에 포함하지 않는다. SDK는 다운로드가 가능한 경우 각 컴퓨터의 사용자 폴더에 준비한다. Python 준비 성공과 `.skp` 저장 가능 여부를 구분한다. DLL 로드나 저장 검증이 실패한 경우에도 준비 완료라고 안내하지 않는다. Windows 실제 SDK 다운로드·실행·저장 검증은 아직 수행하지 않았다.
 
 ## 개발자 옵션
 
 `PDF2SKP_RUNTIME_DIR`로 기본 사용자 폴더 대신 시험용 경로를 지정할 수 있다. `PDF2SKP_PYTHON`은 가상환경을 만들 때 사용할 인터프리터 경로 또는 버전이다. `--library` 또는 `PDF2SKP_SKETCHUP_API`로 로컬 native 바이너리를 지정한다.
+
+`--sdk-url`은 공식 SketchUp/Trimble HTTPS SDK ZIP 주소를 지정하는 에이전트·개발자 옵션이다. `--sdk-sha256`은 기대하는 ZIP hash이며, 지정하면 반드시 일치해야 한다. 일반 사용에는 두 옵션이 필요하지 않다. SDK 재사용 시 압축 해제된 파일들의 hash를 확인한다. macOS에는 SDK 자동 다운로드를 적용하지 않는다.
 
 macOS 기본 Python은 `~/.local/share/pdf2skp-skill/.venv/bin/python`, Windows는 `%LOCALAPPDATA%/pdf2skp-skill/.venv/Scripts/python.exe`다. 정확한 경로는 `runtime.json`을 사용한다. 실행 환경은 스킬 폴더 밖에 있으므로 스킬 업데이트 뒤에도 유지된다.
