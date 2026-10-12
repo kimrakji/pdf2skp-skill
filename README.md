@@ -22,10 +22,10 @@ PDF 평면도와 벽체 높이를 받아 디자이너가 이어서 편집할 수
 ## Requirements: 실행 환경
 
 - 로컬 파일을 읽고 명령을 실행할 수 있는 Agent Skills 지원 에이전트
-- Python과 [Python 의존성](skills/pdf-to-sketchup/requirements.txt)
-- 실제 `.skp` 저장을 위한 로컬 SketchUp C API 라이브러리
+- SketchUp과 실제 `.skp` 저장에 사용할 수 있는 로컬 SketchUp C API 라이브러리
+- 첫 실행의 자동 준비를 위한 인터넷 연결과 사용자 폴더 쓰기 권한
 
-macOS arm64, Python 3.12, SketchUp C API 14.2에서 저장·재열기를 검증했습니다. SDK 바이너리는 이 저장소에 포함하지 않습니다. 다른 운영체제와 독립 SDK 설치 환경은 별도 검증이 필요합니다.
+Python을 미리 설치하거나 가상환경을 직접 설정할 필요는 없습니다. 에이전트가 첫 실행에서 Python과 필요한 패키지를 사용자 폴더에 준비하고 설치된 SketchUp의 C API를 확인합니다. macOS arm64에서 Python이 없는 실행 경로의 자동 준비와 실제 `.skp` 저장·재열기를 검증했습니다. Windows 준비 스크립트는 제공하지만 Windows 실제 실행은 아직 검증하지 않았습니다. SDK 바이너리는 이 저장소에 포함하지 않습니다.
 
 ## Installation: 설치
 
@@ -39,14 +39,13 @@ https://github.com/kimrakji/pdf2skp-skill/tree/main/skills/pdf-to-sketchup
 
 [Codex의 스킬 설치 기능](https://learn.chatgpt.com/docs/build-skills)을 사용하므로 별도의 Node.js나 `npx` 설치는 필요하지 않습니다. 비공개 저장소는 해당 저장소에 접근할 수 있는 GitHub 인증이 필요합니다.
 
-설치 후 스킬을 선택하고 실행 환경을 준비하도록 요청합니다.
+설치 후 스킬을 선택하고 PDF와 벽체 높이를 전달합니다. 첫 실행에서 필요한 환경을 자동으로 준비합니다. 변환 전에 준비 여부만 확인하려면 다음처럼 요청합니다.
 
 ```text
-PDF to SketchUp 스킬의 Python 실행 환경을 준비하고,
-이 컴퓨터의 SketchUp C API 라이브러리를 사용할 수 있는지 확인해줘.
+PDF to SketchUp을 이 컴퓨터에서 사용할 수 있게 준비해줘.
 ```
 
-Python 의존성은 처음 실행할 때 준비합니다. 실제 `.skp` 저장에는 로컬 SketchUp C API 라이브러리가 필요합니다. 다른 에이전트에서의 폴더 설치, 업데이트, Python 수동 설정은 [설치 가이드](docs/chatgpt-setup.md)를 참고하세요.
+사용자가 Python 명령이나 SDK 경로를 입력하지 않아도 에이전트가 준비와 저장 검증을 처리합니다. SketchUp 설치·로그인이나 회사 보안 정책으로 막힌 경우에는 필요한 조치를 안내합니다. 다른 에이전트에서의 폴더 설치와 업데이트는 [설치 가이드](docs/chatgpt-setup.md)를 참고하세요.
 
 ## Usage: 사용 방법
 

@@ -24,6 +24,7 @@ AI의 변동이 남는 곳은 평면도 영역·축척 기준점·벽체와 가�
 | 경로 | 책임 |
 | --- | --- |
 | `scripts/main.py` | 실행 진입점 |
+| `scripts/setup.sh`, `scripts/setup.ps1`, `scripts/check_runtime.py` | Python 없는 컴퓨터의 실행 환경 준비와 실제 native 저장·재열기 검사 |
 | `scripts/app/usecase.py` | CLI 입력, JSON 계약 검증, 실행 조립 |
 | `scripts/features/walls/service.py` | 벽체 축척·높이·병합 정책 |
 | `scripts/externals/pdf/` | PDF 파싱, 렌더, 선택 이미지 |

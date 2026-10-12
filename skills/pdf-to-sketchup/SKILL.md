@@ -17,9 +17,13 @@ description: "PDF 평면도와 벽체 높이로 편집 가능한 SketchUp 밑그
 
 ## 실행 환경
 
-사용자가 Python 경로를 지정하면 우선 사용한다. 지정이 없으면 `~/.local/share/pdf2skp-skill/.venv/bin/python`을 사용한다. 환경이 없으면 `python3 -m venv ~/.local/share/pdf2skp-skill/.venv`로 생성하고, 해당 Python의 `-m pip install -r`에 설치된 스킬 폴더의 `requirements.txt`를 지정한다. 업데이트로 교체되는 스킬 폴더 안에 가상환경을 만들지 않는다. 필요한 Python 모듈을 import해 실행 준비를 확인한다.
+대상은 SketchUp을 사용하는 디자이너의 컴퓨터다. Python이나 개발 도구가 설치되어 있다고 가정하지 않는다. 사용자는 스킬을 설치하고 PDF와 높이를 전달한다. Python 설치·가상환경·패키지·라이브러리 경로 준비는 에이전트가 처리하며 사용자에게 터미널 명령이나 SDK 경로 찾기를 맡기지 않는다.
 
-사용자가 지정한 로컬 SketchUp C API 바이너리를 우선 사용하고, 지정이 없으면 설치된 SketchUp 앱의 framework 또는 로컬 SDK 바이너리를 확인한다. `.skp` 저장 환경이 없으면 아래 실패 시 전달 규칙을 따른다.
+첫 변환 또는 실행 환경 준비 요청에서 설치된 스킬의 `scripts/setup.sh`를 macOS에서 `sh`로 실행한다. Windows에서는 `scripts/setup.ps1`을 PowerShell로 실행한다. Python이 없어도 시작할 수 있으며, 필요한 경우 공식 uv 설치기를 받아 사용자 폴더에 uv와 Python 3.12를 준비하고 의존성을 설치한다. 관리자 설치나 시스템 PATH 변경은 하지 않는다. 사용자가 Python을 지정하면 `PDF2SKP_PYTHON`에 전달한다. 기존 환경과 스킬 폴더 안에 가상환경을 만들거나 다른 프로젝트의 개발 환경에 의존하지 않는다.
+
+기본 실행 환경은 macOS의 `~/.local/share/pdf2skp-skill/`, Windows의 `%LOCALAPPDATA%/pdf2skp-skill/`이다. 준비 스크립트는 설치된 SketchUp의 C API를 찾아 시험 벽체와 참조 이미지를 실제 `.skp`로 저장하고 별도 프로세스에서 다시 연다. 결과와 Python·라이브러리 경로는 실행 환경의 `runtime.json`에 기록한다. 사용자가 로컬 C API를 지정하면 준비 스크립트에 `--library`로 전달한다. 상세 설치 절차와 개발자 옵션은 [runtime-setup.md](references/runtime-setup.md)를 따른다.
+
+준비가 성공한 경우 `runtime.json`의 `python`과 `sketchup_library`로 변환을 실행한다. 이후에는 준비된 환경을 재사용하며 의존성 변경 또는 실행 오류가 있으면 준비 스크립트를 다시 실행한다. 스크립트가 실패하거나 `ready`가 false이면 준비 완료라고 보고하지 않는다. 설치된 SketchUp에서 C API를 찾지 못하거나 저장 검증이 실패하면 원인과 필요한 조치만 안내하고 아래 실패 시 전달 규칙을 따른다. SketchUp 구매·로그인·관리자 승인이나 회사 보안 정책 때문에 에이전트가 진행할 수 없는 단계를 자동 처리했다고 말하지 않는다.
 
 ## 실행
 
